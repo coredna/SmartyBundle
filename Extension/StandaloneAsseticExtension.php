@@ -16,22 +16,25 @@
  * License along with NoiseLabs-SmartyBundle; if not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2011-2015 Vítor Brandão
+ * Copyright (C) 2011-2016 Vítor Brandão
  *
  * @category    NoiseLabs
  * @package     SmartyBundle
- * @copyright   (C) 2011-2014 Vítor Brandão <vitor@noiselabs.org>
+ * @copyright   (C) 2011-2016 Vítor Brandão <vitor@noiselabs.org>
  * @license     http://www.gnu.org/licenses/lgpl-3.0-standalone.html LGPL-3
  */
 
  namespace NoiseLabs\Bundle\SmartyBundle\Extension;
 
-use Assetic\AssetManager;
-use Assetic\FilterManager;
-use Assetic\Filter;
-use Assetic\AssetWriter;
 use Assetic\Asset\AssetCache;
+use Assetic\AssetManager;
+use Assetic\AssetWriter;
 use Assetic\Cache\FilesystemCache;
+use Assetic\Factory\AssetFactory;
+use Assetic\Filter;
+use Assetic\FilterManager;
+use InvalidArgumentException;
+use NoiseLabs\Bundle\SmartyBundle\Extension\Plugin\BlockPlugin;
 
 if (isset($_SERVER['LESSPHP'])) {
     require_once $_SERVER['LESSPHP'];

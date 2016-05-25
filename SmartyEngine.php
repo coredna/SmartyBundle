@@ -16,11 +16,11 @@
  * License along with NoiseLabs-SmartyBundle; if not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2011-2015 Vítor Brandão
+ * Copyright (C) 2011-2016 Vítor Brandão
  *
  * @category    NoiseLabs
  * @package     SmartyBundle
- * @copyright   (C) 2011-2014 Vítor Brandão <vitor@noiselabs.org>
+ * @copyright   (C) 2011-2016 Vítor Brandão <vitor@noiselabs.org>
  * @license     http://www.gnu.org/licenses/lgpl-3.0-standalone.html LGPL-3
  * @link        http://www.noiselabs.org
  */
@@ -31,12 +31,13 @@ use NoiseLabs\Bundle\SmartyBundle\Exception\RuntimeException;
 use NoiseLabs\Bundle\SmartyBundle\Extension\ExtensionInterface;
 use NoiseLabs\Bundle\SmartyBundle\Extension\Filter\FilterInterface;
 use NoiseLabs\Bundle\SmartyBundle\Extension\Plugin\PluginInterface;
+use Psr\Log\LoggerInterface;
+use Smarty;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\GlobalVariables;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Templating\Loader\LoaderInterface;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 
 /**
@@ -57,13 +58,21 @@ class SmartyEngine implements EngineInterface
     protected $globals;
     protected $loader;
     protected $parser;
+
+    /**
+     * @var PluginInterface[]
+     */
     protected $plugins;
+
+    /**
+     * @var Smarty
+     */
     protected $smarty;
 
     /**
      * Constructor.
      *
-     * @param \Smarty                     $smarty    A \Smarty instance
+     * @param Smarty                     $smarty    A \Smarty instance
      * @param ContainerInterface          $container A ContainerInterface instance
      * @param TemplateNameParserInterface $parser    A TemplateNameParserInterface instance
      * @param LoaderInterface             $loader    A LoaderInterface instance
@@ -71,9 +80,9 @@ class SmartyEngine implements EngineInterface
      * @param GlobalVariables|null        $globals   A GlobalVariables instance or null
      * @param LoggerInterface|null        $logger    A LoggerInterface instance or null
      */
-    public function __construct(\Smarty $smarty, ContainerInterface $container,
-    TemplateNameParserInterface $parser, LoaderInterface $loader, array $options,
-    GlobalVariables $globals = null, LoggerInterface $logger = null)
+    public function __construct(Smarty $smarty, ContainerInterface $container,
+                                TemplateNameParserInterface $parser, LoaderInterface $loader, array $options,
+                                GlobalVariables $globals = null, LoggerInterface $logger = null)
     {
         $this->smarty = $smarty;
         $this->parser = $parser;
@@ -536,9 +545,10 @@ class SmartyEngine implements EngineInterface
      * Gets the collection of plugins, optionally filtered by an extension
      * name.
      *
-     * @return array An array of plugins
+     * @param string $extensionName
+     * @return Extension\Plugin\PluginInterface[] An array of plugins
      */
-    public function getPlugins($extensionName = false)
+    public function getPlugins($extensionName = '')
     {
         if (null === $this->plugins) {
             $this->plugins = array();
@@ -549,7 +559,6 @@ class SmartyEngine implements EngineInterface
 
         // filter plugins that belong to $extension
         if ($extensionName) {
-
             $plugins = array();
             foreach (array_keys($this->plugins) as $k) {
                 if ($extensionName == $this->plugins[$k]->getExtension()->getName()) {
@@ -620,7 +629,7 @@ class SmartyEngine implements EngineInterface
      *
      * To learn more see {@link http://www.smarty.net/docs/en/variable.default.template.handler.func.tpl}
      */
-    public function smartyDefaultTemplateHandler($type, $name, &$content, &$modified, \Smarty $smarty)
+    public function smartyDefaultTemplateHandler($type, $name, &$content, &$modified, Smarty $smarty)
     {
         return ($type == 'file') ? (string) $this->load($name) : false;
     }
