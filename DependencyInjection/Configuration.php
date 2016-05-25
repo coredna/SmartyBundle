@@ -71,6 +71,7 @@ class Configuration implements ConfigurationInterface
         $this->addFormSection($rootNode);
         $this->addGlobalsSection($rootNode);
         $this->addSmartyOptions($rootNode);
+        $this->addSupportsSection($rootNode);
 
         $rootNode
             ->children()
@@ -247,6 +248,21 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('use_include_path')->defaultFalse()->end()
                         ->scalarNode('use_sub_dirs')->defaultTrue()->end()
                     ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    /**
+     * Template globals.
+     */
+    protected function addSupportsSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('supports')
+                    ->canBeUnset()
+                    ->prototype('scalar')->end()
                 ->end()
             ->end()
         ;

@@ -70,6 +70,7 @@ class SmartyExtension extends Extension
         }
 
         $container->setParameter('smarty.options', $config['options']);
+        $container->setParameter('smarty.supports', $config['supports']);
 
          // Enable AsseticExtension if undefined (legacy support)
         if (!isset($config['assetic'])) {

@@ -58,6 +58,7 @@ class SmartyEngine implements EngineInterface
     protected $globals;
     protected $loader;
     protected $parser;
+    protected $supports;
 
     /**
      * @var PluginInterface[]
@@ -82,12 +83,13 @@ class SmartyEngine implements EngineInterface
      */
     public function __construct(Smarty $smarty, ContainerInterface $container,
                                 TemplateNameParserInterface $parser, LoaderInterface $loader, array $options,
-                                GlobalVariables $globals = null, LoggerInterface $logger = null)
+                                GlobalVariables $globals = null, array $supports = null, LoggerInterface $logger = null)
     {
         $this->smarty = $smarty;
         $this->parser = $parser;
         $this->loader = $loader;
         $this->logger = $logger;
+        $this->supports = $supports;
         $this->globals = array();
 
         // There are no default extensions.
@@ -357,7 +359,9 @@ class SmartyEngine implements EngineInterface
         $template = $this->parser->parse($name);
 
         // Keep 'tpl' for backwards compatibility.
-        return in_array($template->get('engine'), array('smarty', 'tpl'));
+        $supports = is_array($this->supports) && count($this->supports) ? $this->supports : array('smarty', 'tpl');
+
+        return in_array($template->get('engine'), $supports);
     }
 
     /**
